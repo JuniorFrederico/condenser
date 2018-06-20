@@ -1,5 +1,5 @@
 import { takeEvery } from 'redux-saga';
-import { call, put, select } from 'redux-saga/effects';
+
 import { fromJS, Set, Map } from 'immutable';
 import tt from 'counterpart';
 import getSlug from 'speakingurl';
@@ -806,7 +806,19 @@ function* recoverAccount({
             },
             [newOwnerPrivate]
         );
-        if (onSuccess) onSuccess();
+        const outgoingAutoVestingRoutes = yield call(
+          [api, api.getWithdrawRoutes],
+          [account.name, 'outgoing']
+        )
+        if (outgoingAutoVestingRoutes.length > 0) {
+          outgoingAutoVestingRoutes.map( ovr => {
+            yield call(
+              [api, api.setWithdrawVestingRoute],
+              [newActive, ovr.from_account, ovr.to_account, 0, true ]
+          )
+        })
+      }
+      if (onSuccess) onSuccess();
     } catch (error) {
         console.error('Recover account', error);
         if (onError) onError(error);
