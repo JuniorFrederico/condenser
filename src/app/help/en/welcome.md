@@ -134,7 +134,7 @@ As postagens têm três partes principais: título, conteúdo, tags.
 
 Você vai querer chamar a atenção do título, e relevante para o seu conteúdo. A primeira imagem que você usa será a imagem em miniatura.
 
-Tags ajudarão as pessoas a encontrar suas postagens. Cada postagem pode ter até cinco tags, separadas por espaços. Todas as tags devem ser relevantes para o conteúdo da postagem. Você pode procurar conteúdo por tags, bem como ver uma lista de tags populares que outros usuários utilizaram em suas postagens [aqui] (https://steembr.com/tags).
+Tags ajudarão as pessoas a encontrar suas postagens. Cada postagem pode ter até cinco tags, separadas por espaços. Todas as tags devem ser relevantes para o conteúdo da postagem. Você pode procurar conteúdo por tags, bem como ver uma lista de tags populares que outros usuários utilizaram em suas postagens [aqui] (https://steembr.com/tags) sugerimos usar ' pt ' e ' steembr ' e mais 3 de sua escolha.
 
 Existem vários guias para criar postagens na seção "Postagens úteis dos usuários SteemBR" abaixo.
 
@@ -241,5 +241,5 @@ A melhor atitude a ter é esperar não ganhar nada. Diverta-se. Fique envolvido.
 <a href="#Table_of_Contents">^</a>
 ## <span id="Live_Help">Chat Online </span>
 
-Mate suas duvidas com a maior comnuidade brasileira  [Ajuda](https://steem.chat/channel/help) Canal  [Brazilians](https://steem.chat/home). .
+Mate suas duvidas com a maior comnuidade brasileira  [Ajuda](https://discord.gg/uc99YWY) Canal  [Brazilians](https://discord.gg/uc99YWY). .
 
