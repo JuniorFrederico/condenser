@@ -5,6 +5,7 @@
 ### <span id="Table_of_Contents">Geral</span>
 - <a href="#What_is_Steemit_com">O que o  Steembr.com?</a>
 - <a href="#How_does_Steemit_work"> Conheça curadoria que apoia os posts da língua portuguesa </a>
+- <a href="#How_does_Steemit_work"> EQUIPE PTGRAM POWER</a>
 
 O steembr.com e uma versão em Português do steemit.com criada por um de seus usuários @juniorfrederico, foi feito com intuito de facilitar o acesso para os usuários da língua Portuguesa .
 Onde você pode acessar com suas credenciais normal do Blockchain STEEM. 
@@ -21,6 +22,7 @@ Quer participar do projeto, Entre no chat do Discord através  deste link https:
 
 - <a href="#How_does_Steemit_work"> EQUIPE PTGRAM POWER</a>
 <a href="#Table_of_Contents">^</a>
+## <span id="Table_of_Contents">EQUIPE PTGRAM POWER</span>
 
 O #ptgram power é um grupo de apoio a steemers, que visa oferecer leitura, comentários relevantes e autovotos <a href="https://ptgram.tk/meritocracia/">(por meritocracia, dependendo da participação ativa na comunidade #pt)</a> a todos os membros do Steemit que escrevem em português e publicam no grupo especial de Posts. <a href="https://ptgram.tk/participe/">Saiba como participar!</a>
 
