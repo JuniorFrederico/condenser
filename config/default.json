@@ -1,12 +1,12 @@
 {
-  "database_url": "mysql://usser:pass0@127.0.0.1/steemit_dev",
+  "database_url": "mysql://steembr:naoseimesm0@127.0.0.1/steemit_dev",
   "disable_signups": false,
   "facebook_app_id": false,
   "google_analytics_id": "UA-122378835-1",
   "helmet": {
     "directives": {
       "childSrc": "'self' www.youtube.com staticxx.facebook.com w.soundcloud.com player.vimeo.com",
-      "connectSrc": "'self' steemit.com https://api.steemit.com api.blocktrades.us",
+      "connectSrc": "'self' steemit.com https://api.steemit.com https://steemitimages.com api.blocktrades.us",
       "defaultSrc": "'self' www.youtube.com staticxx.facebook.com player.vimeo.com",
       "fontSrc": "data: fonts.gstatic.com",
       "frameAncestors": "'none'",
@@ -68,7 +68,7 @@
     "account_sid": false,
     "auth_token": false
   },
-  "upload_image": "https://steemitimages.com/",
+  "upload_image": "https://steemitimages.com",
   "steemd_connection_client": "https://api.steemit.com",
   "steemd_connection_server": "https://api.steemit.com",
   "steemd_use_appbase": false,
