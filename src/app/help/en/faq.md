@@ -22,7 +22,7 @@ Quer participar do projeto, Entre no chat do Discord através  deste link https:
 - <a href="#How_does_Steemit_work"> EQUIPE PTGRAM POWER</a>
 <a href="#Table_of_Contents">^</a>
 
-O #ptgram power é um grupo de apoio a steemers, que visa oferecer leitura, comentários relevantes e autovotos (por meritocracia, dependendo da participação ativa na comunidade #pt) a todos os membros do Steemit que escrevem em português e publicam no grupo especial de Posts. <a href="https://ptgram.tk/participe/">Saiba como participar!</a>
+O #ptgram power é um grupo de apoio a steemers, que visa oferecer leitura, comentários relevantes e autovotos <a href="https://ptgram.tk/meritocracia/">(por meritocracia, dependendo da participação ativa na comunidade #pt)</a> a todos os membros do Steemit que escrevem em português e publicam no grupo especial de Posts. <a href="https://ptgram.tk/participe/">Saiba como participar!</a>
 
 <a href="#Table_of_Contents">^</a>
 ## <span id="Which_exchanges_are_STEEM_and_SBD_listed_on">Em quais exchanges STEEM e SBD são listadas ?</span>
