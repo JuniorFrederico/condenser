@@ -400,7 +400,7 @@ class Settings extends React.Component {
                                             }
                                             onChange={this.handleLanguageChange}
                                         >
-                                            <option value="en">English</option>
+                                            <option value="en">Português</option>
                                             <option value="es">
                                                 Spanish Español
                                             </option>
