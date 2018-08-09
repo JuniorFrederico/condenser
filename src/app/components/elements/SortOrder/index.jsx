@@ -23,7 +23,7 @@ const SortOrder = ({ topic, sortOrder, horizontal, pathname }) => {
 
     // If we are at the homepage, the sort order is 'trending'
     if (pathname === '/') {
-        tag = '';
+        tag = 'pt';
         sort = 'trending';
     }
 
