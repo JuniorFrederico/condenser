@@ -3,27 +3,27 @@ import { objAccessor } from 'app/utils/Accessors';
 import normalizeProfile from 'app/utils/NormalizeProfile';
 
 const site_desc =
-    'Steemit is a social media platform where everyone gets paid for creating and curating content. It leverages a robust digital points system (Steem) for digital rewards.';
+    'Steembr é uma revolucionária rede social no formato de blog , Onde os Autores que criam conteúdo e votam ( Curtem ) são recompensados com criptomoedas ( STEEM ).';
 
 function addSiteMeta(metas) {
-    metas.push({ title: 'Steemit' });
+    metas.push({ title: 'SteemBR' });
     metas.push({ name: 'description', content: site_desc });
     metas.push({ property: 'og:type', content: 'website' });
-    metas.push({ property: 'og:site_name', content: 'Steemit' });
-    metas.push({ property: 'og:title', content: 'Steemit' });
+    metas.push({ property: 'og:site_name', content: 'SteemBR' });
+    metas.push({ property: 'og:title', content: 'SteemBR' });
     metas.push({ property: 'og:description', content: site_desc });
     metas.push({
         property: 'og:image',
-        content: 'https://steemit.com/images/steemit.png',
+        content: 'https://steembr.com/images/steemit.png',
     });
     metas.push({ property: 'fb:app_id', content: $STM_Config.fb_app });
     metas.push({ name: 'twitter:card', content: 'summary' });
-    metas.push({ name: 'twitter:site', content: '@steemit' });
-    metas.push({ name: 'twitter:title', content: '#Steemit' });
+    metas.push({ name: 'twitter:site', content: '@SteemBR' });
+    metas.push({ name: 'twitter:title', content: '#SteemBR' });
     metas.push({ name: 'twitter:description', site_desc });
     metas.push({
         name: 'twitter:image',
-        content: 'https://steemit.com/images/steemit.png',
+        content: 'https://steembr.com/images/steemit.png',
     });
 }
 
@@ -38,8 +38,8 @@ export default function extractMeta(chain_data, rp) {
         if (content && content.id !== '0.0.0') {
             // API currently returns 'false' data with id 0.0.0 for posts that do not exist
             const d = extractContent(objAccessor, content, false);
-            const url = 'https://steemit.com' + d.link;
-            const title = d.title + ' — Steemit';
+            const url = 'https://steembr.com' + d.link;
+            const title = d.title + ' — SteemBR';
             const desc = d.desc + ' by ' + d.author;
             const image = d.image_link || profile.profile_image;
             const { category, created } = d;
@@ -55,10 +55,10 @@ export default function extractMeta(chain_data, rp) {
             metas.push({ name: 'og:url', content: url });
             metas.push({
                 name: 'og:image',
-                content: image || 'https://steemit.com/images/steemit.png',
+                content: image || 'https://steembr.com/images/steemit.png',
             });
             metas.push({ name: 'og:description', content: desc });
-            metas.push({ name: 'og:site_name', content: 'Steemit' });
+            metas.push({ name: 'og:site_name', content: 'SteemBR' });
             metas.push({ name: 'fb:app_id', content: $STM_Config.fb_app });
             metas.push({ name: 'article:tag', content: category });
             metas.push({
@@ -71,13 +71,13 @@ export default function extractMeta(chain_data, rp) {
                 name: 'twitter:card',
                 content: image ? 'summary_large_image' : 'summary',
             });
-            metas.push({ name: 'twitter:site', content: '@steemit' });
+            metas.push({ name: 'twitter:site', content: '@SteemBR' });
             metas.push({ name: 'twitter:title', content: title });
             metas.push({ name: 'twitter:description', content: desc });
             metas.push({
                 name: 'twitter:image',
                 content:
-                    image || 'https://steemit.com/images/steemit-twshare-2.png',
+                    image || 'https://steembr.com/images/steemit-twshare-2.png',
             });
         } else {
             addSiteMeta(metas);
@@ -89,12 +89,12 @@ export default function extractMeta(chain_data, rp) {
         if (name == null) name = account.name;
         if (about == null)
             about =
-                'Join thousands on steemit who share, post and earn rewards.';
+                'Se junte a SteemBR compartihle, post e ganhe $ por isso!.';
         if (profile_image == null)
-            profile_image = 'https://steemit.com/images/steemit-twshare-2.png';
+            profile_image = 'https://steembr.com/images/steemit-twshare-2.png';
         // Set profile tags
         const title = `@${account.name}`;
-        const desc = `The latest posts from ${name}. Follow me at @${
+        const desc = `Ultima postagem de ${name}. Siga ele @${
             account.name
         }. ${about}`;
         const image = profile_image;
@@ -104,7 +104,7 @@ export default function extractMeta(chain_data, rp) {
 
         // Twitter card data
         metas.push({ name: 'twitter:card', content: 'summary' });
-        metas.push({ name: 'twitter:site', content: '@steemit' });
+        metas.push({ name: 'twitter:site', content: '@SteemBR' });
         metas.push({ name: 'twitter:title', content: title });
         metas.push({ name: 'twitter:description', content: desc });
         metas.push({ name: 'twitter:image', content: image });
