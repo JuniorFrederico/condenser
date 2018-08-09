@@ -569,7 +569,7 @@
         "influence_token":
             "Tokens de influência que lhe dão mais controle sobre os pagamentos pós e permitem que você ganhe com recompensas de curadoria.",
         "estimated_value":
-            "O valor estimado é baseado em um valor médio de %(LIQUID_TOKEN) em USd.",
+            "O valor estimado é baseado em um valor médio de %(LIQUID_TOKEN) em USD.",
         "non_transferable":
             "%(VESTING_TOKEN) não é transferível e requer 3 meses (13 pagamentos) para converter para %(LIQUID_TOKEN).",
         "converted_VESTING_TOKEN_can_be_sent_to_yourself_but_can_not_transfer_again":
