@@ -838,6 +838,7 @@
     "userwallet_jsx": {
         "transfer": "Transfer",
         "conversion_complete_tip": "Vai completar em %(date)s",
+	"tradeable_tokens_transferred": "Tokens trocáveis que podem ser transferidos para qualquer lugar a qualquer momento",
         "in_conversion": "%(amount)s na conversão",
         "transfer_to_savings": "Transferir para Poupança",
         "power_up": "Power Up",
@@ -909,5 +910,3 @@
         "phishylink_reveal": "mostrar link"
     }
 }
-
-
