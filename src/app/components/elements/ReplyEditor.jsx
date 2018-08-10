@@ -1,6 +1,6 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import reactForm from 'app/utils/ReactForm';
+import Autocomplete from 'react-autocomplete';
 import * as transactionActions from 'app/redux/TransactionReducer';
 import * as userActions from 'app/redux/UserReducer';
 import MarkdownViewer from 'app/components/cards/MarkdownViewer';
@@ -9,6 +9,7 @@ import { validateCategory } from 'app/components/cards/CategorySelector';
 import LoadingIndicator from 'app/components/elements/LoadingIndicator';
 import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
 import Tooltip from 'app/components/elements/Tooltip';
+import { validate_account_name } from 'app/utils/ChainValidation';
 import sanitizeConfig, { allowedTags } from 'app/utils/SanitizeConfig';
 import sanitize from 'sanitize-html';
 import HtmlReady from 'shared/HtmlReady';
@@ -25,21 +26,20 @@ const RTE_DEFAULT = false;
 class ReplyEditor extends React.Component {
     static propTypes = {
         // html component attributes
-        formId: PropTypes.string.isRequired, // unique form id for each editor
-        type: PropTypes.oneOf(['submit_story', 'submit_comment', 'edit']),
-        successCallback: PropTypes.func, // indicator that the editor is done and can be hidden
-        onCancel: PropTypes.func, // hide editor when cancel button clicked
+        formId: React.PropTypes.string.isRequired, // unique form id for each editor
+        type: React.PropTypes.oneOf(['submit_story', 'submit_comment', 'edit']),
+        successCallback: React.PropTypes.func, // indicator that the editor is done and can be hidden
+        onCancel: React.PropTypes.func, // hide editor when cancel button clicked
 
-        author: PropTypes.string, // empty or string for top-level post
-        permlink: PropTypes.string, // new or existing category (default calculated from title)
-        parent_author: PropTypes.string, // empty or string for top-level post
-        parent_permlink: PropTypes.string, // new or existing category
-        jsonMetadata: PropTypes.object, // An existing comment has its own meta data
-        category: PropTypes.string, // initial value
-        title: PropTypes.string, // initial value
-        body: PropTypes.string, // initial value
-        richTextEditor: PropTypes.func,
-        payoutType: PropTypes.string,
+        author: React.PropTypes.string, // empty or string for top-level post
+        permlink: React.PropTypes.string, // new or existing category (default calculated from title)
+        parent_author: React.PropTypes.string, // empty or string for top-level post
+        parent_permlink: React.PropTypes.string, // new or existing category
+        jsonMetadata: React.PropTypes.object, // An existing comment has its own meta data
+        category: React.PropTypes.string, // initial value
+        title: React.PropTypes.string, // initial value
+        body: React.PropTypes.string, // initial value
+        richTextEditor: React.PropTypes.func,
     };
 
     static defaultProps = {
@@ -52,7 +52,9 @@ class ReplyEditor extends React.Component {
 
     constructor(props) {
         super();
-        this.state = { progress: {} };
+        this.state = {
+            progress: {},
+        };
         this.initForm(props);
     }
 
@@ -75,6 +77,7 @@ class ReplyEditor extends React.Component {
                 raw = body.value;
             }
 
+            var beneficiaries = [];
             // Check for draft data
             let draft = localStorage.getItem('replyEditorData-' + formId);
             if (draft) {
@@ -82,8 +85,11 @@ class ReplyEditor extends React.Component {
                 const { category, title } = this.state;
                 if (category) category.props.onChange(draft.category);
                 if (title) title.props.onChange(draft.title);
+                if (draft.beneficiaries) beneficiaries = draft.beneficiaries;
                 raw = draft.body;
             }
+
+            this.setState({ beneficiaries });
 
             // If we have an initial body, check if it's html or markdown
             if (raw) {
@@ -98,6 +104,12 @@ class ReplyEditor extends React.Component {
                     ? stateFromHtml(this.props.richTextEditor, raw)
                     : null,
             });
+            this.setAutoVote();
+            this.setState({
+                payoutType: this.props.isStory
+                    ? localStorage.getItem('defaultPayoutType') || '50%'
+                    : '50%',
+            });
         }
     }
 
@@ -107,6 +119,10 @@ class ReplyEditor extends React.Component {
             else if (this.refs.postRef) this.refs.postRef.focus();
             else if (this.refs.rte) this.refs.rte._focus();
         }, 300);
+    }
+
+    matchAutocompleteUser(item, value) {
+        return item.toLowerCase().indexOf(value.toLowerCase()) > -1;
     }
 
     shouldComponentUpdate = shouldComponentUpdate(this, 'ReplyEditor');
@@ -120,16 +136,18 @@ class ReplyEditor extends React.Component {
             if (
                 ts.body.value !== ns.body.value ||
                 (ns.category && ts.category.value !== ns.category.value) ||
-                (ns.title && ts.title.value !== ns.title.value)
+                (ns.title && ts.title.value !== ns.title.value) ||
+                ns.beneficiaries !== ts.beneficiaries
             ) {
                 // also prevents saving after parent deletes this information
                 const { formId } = nextProps;
-                const { category, title, body } = ns;
+                const { category, title, body, beneficiaries } = ns;
                 const data = {
                     formId,
                     title: title ? title.value : undefined,
                     category: category ? category.value : undefined,
                     body: body.value,
+                    beneficiaries,
                 };
 
                 clearTimeout(saveEditorTimeout);
@@ -159,21 +177,26 @@ class ReplyEditor extends React.Component {
             instance: this,
             name: 'replyForm',
             initialValues: props.initialValues,
-            validation: values => ({
-                title:
-                    isStory &&
-                    (!values.title || values.title.trim() === ''
+            validation: values => {
+                return {
+                    title:
+                        isStory &&
+                        (!values.title || values.title.trim() === ''
+                            ? tt('g.required')
+                            : values.title.length > 255
+                                ? tt('reply_editor.shorten_title')
+                                : null),
+                    category:
+                        isStory && validateCategory(values.category, !isEdit),
+                    body: !values.body
                         ? tt('g.required')
-                        : values.title.length > 255
-                          ? tt('reply_editor.shorten_title')
-                          : null),
-                category: isStory && validateCategory(values.category, !isEdit),
-                body: !values.body
-                    ? tt('g.required')
-                    : values.body.length > maxKb * 1024
-                      ? tt('reply_editor.exceeds_maximum_length', { maxKb })
-                      : null,
-            }),
+                        : values.body.length > maxKb * 1024
+                            ? tt('reply_editor.exceeds_maximum_length', {
+                                  maxKb,
+                              })
+                            : null,
+                };
+            },
         });
     }
 
@@ -201,12 +224,21 @@ class ReplyEditor extends React.Component {
             confirm(tt('reply_editor.are_you_sure_you_want_to_clear_this_form'))
         ) {
             replyForm.resetForm();
+            this.setAutoVote();
             this.setState({
                 rte_value: stateFromHtml(this.props.richTextEditor),
             });
             this.setState({ progress: {} });
+            this.setState({ beneficiaries: [] });
             if (onCancel) onCancel(e);
         }
+    };
+
+    autoVoteOnChange = () => {
+        const { autoVote } = this.state;
+        const key = 'replyEditorData-autoVote-story';
+        localStorage.setItem(key, !autoVote.value);
+        autoVote.props.onChange(!autoVote.value);
     };
 
     // As rte_editor is updated, keep the (invisible) 'body' field in sync.
@@ -217,6 +249,17 @@ class ReplyEditor extends React.Component {
         if (body.value !== html) body.props.onChange(html);
     };
 
+    setAutoVote() {
+        const { isStory } = this.props;
+        if (isStory) {
+            const { autoVote } = this.state;
+            const key = 'replyEditorData-autoVote-story';
+            const autoVoteDefault = JSON.parse(
+                localStorage.getItem(key) || false
+            );
+            autoVote.props.onChange(autoVoteDefault);
+        }
+    }
     toggleRte = e => {
         e.preventDefault();
         const state = { rte: !this.state.rte };
@@ -235,6 +278,61 @@ class ReplyEditor extends React.Component {
         void draft.offsetWidth; // reset animation
         draft.className = 'ReplyEditor__draft ReplyEditor__draft-saved';
     }
+
+    handleAddBeneficiary = e => {
+        if (this.state.beneficiaries.length < 8) {
+            this.setState({
+                beneficiaries: this.state.beneficiaries.concat([
+                    { username: '', percent: '0' },
+                ]),
+            });
+        }
+    };
+
+    handleRemoveBeneficiary = idx => e => {
+        this.setState({
+            beneficiaries: this.state.beneficiaries.filter(
+                (s, bidx) => idx != bidx
+            ),
+        });
+    };
+
+    handleBeneficiaryUserChange = idx => e => {
+        const newBeneficiaries = this.state.beneficiaries.map(
+            (beneficiary, bidx) => {
+                if (idx != bidx) return beneficiary;
+                return { ...beneficiary, username: e.target.value };
+            }
+        );
+        this.setState({ beneficiaries: newBeneficiaries });
+    };
+
+    handleBeneficiaryUserSelect = idx => val => {
+        const newBeneficiaries = this.state.beneficiaries.map(
+            (beneficiary, bidx) => {
+                if (idx != bidx) return beneficiary;
+                return { ...beneficiary, username: val };
+            }
+        );
+        this.setState({ beneficiaries: newBeneficiaries });
+    };
+
+    handleBeneficiaryPercentChange = idx => e => {
+        const newBeneficiaries = this.state.beneficiaries.map(
+            (beneficiary, bidx) => {
+                if (idx != bidx) return beneficiary;
+                return { ...beneficiary, percent: e.target.value };
+            }
+        );
+        this.setState({ beneficiaries: newBeneficiaries });
+    };
+
+    onPayoutTypeChange = e => {
+        const payoutType = e.currentTarget.value;
+        this.setState({ payoutType });
+        if (payoutType !== '0%')
+            localStorage.setItem('defaultPayoutType', payoutType);
+    };
 
     onDrop = (acceptedFiles, rejectedFiles) => {
         if (!acceptedFiles.length) {
@@ -304,8 +402,8 @@ class ReplyEditor extends React.Component {
             category: this.props.category,
             body: this.props.body,
         };
-        const { onCancel, onTitleChange } = this;
-        const { title, category, body } = this.state;
+        const { onCancel, onTitleChange, autoVoteOnChange } = this;
+        const { title, category, body, autoVote } = this.state;
         const {
             reply,
             username,
@@ -320,10 +418,15 @@ class ReplyEditor extends React.Component {
             jsonMetadata,
             state,
             successCallback,
-            payoutType,
         } = this.props;
         const { submitting, valid, handleSubmit } = this.state.replyForm;
-        const { postError, titleWarn, rte } = this.state;
+        const {
+            postError,
+            titleWarn,
+            rte,
+            payoutType,
+            beneficiaries,
+        } = this.state;
         const { progress, noClipboardData } = this.state;
         const disabled = submitting || !valid;
         const loading = submitting || this.state.loading;
@@ -337,6 +440,8 @@ class ReplyEditor extends React.Component {
         };
         const isEdit = type === 'edit';
         const isHtml = rte || isHtmlTest(body.value);
+        // Be careful, autoVote can reset curation rewards.  Never autoVote on edit..
+        const autoVoteValue = !isEdit && autoVote.value;
         const replyParams = {
             author,
             permlink,
@@ -348,7 +453,9 @@ class ReplyEditor extends React.Component {
             isHtml,
             isStory,
             jsonMetadata,
+            autoVote: autoVoteValue,
             payoutType,
+            beneficiaries,
             successCallback: successCallbackWrapper,
             errorCallback,
         };
@@ -608,19 +715,186 @@ class ReplyEditor extends React.Component {
                                         {tt('g.clear')}
                                     </button>
                                 )}
-                            {!isEdit &&
-                                this.props.payoutType != '50%' && (
+                            {isStory &&
+                                !isEdit && (
                                     <div className="ReplyEditor__options float-right text-right">
-                                        {tt('g.rewards')}
-                                        {': '}
-                                        {this.props.payoutType == '0%' &&
-                                            tt('reply_editor.decline_payout')}
-                                        {this.props.payoutType == '100%' &&
-                                            tt('reply_editor.power_up_100')}
-                                        {'. '}
-                                        <a href={'/@' + username + '/settings'}>
-                                            Update settings
+                                        {tt('g.rewards')} &nbsp;
+                                        <select
+                                            value={this.state.payoutType}
+                                            onChange={this.onPayoutTypeChange}
+                                            style={{
+                                                color:
+                                                    this.state.payoutType ==
+                                                    '0%'
+                                                        ? 'orange'
+                                                        : '',
+                                            }}
+                                        >
+                                            <option value="100%">
+                                                {tt(
+                                                    'reply_editor.power_up_100'
+                                                )}
+                                            </option>
+                                            <option value="50%">
+                                                {tt(
+                                                    'reply_editor.default_50_50'
+                                                )}
+                                            </option>
+                                            <option value="0%">
+                                                {tt(
+                                                    'reply_editor.decline_payout'
+                                                )}
+                                            </option>
+                                        </select>
+                                        <br />
+                                        {tt('reply_editor.beneficiaries')}{' '}
+                                        &nbsp;
+                                        <a
+                                            href="#"
+                                            onClick={this.handleAddBeneficiary}
+                                            hidden={
+                                                this.state.beneficiaries
+                                                    .length >= 8
+                                            }
+                                        >
+                                            {tt('g.add')}
                                         </a>
+                                        <br />
+                                        {this.state.beneficiaries.map(
+                                            (beneficiary, idx) => (
+                                                <div
+                                                    style={{ display: 'flex' }}
+                                                >
+                                                    <input
+                                                        type="text"
+                                                        pattern="[0-9]*"
+                                                        style={{
+                                                            'max-width':
+                                                                '2.2rem',
+                                                            'max-height':
+                                                                '1.5rem',
+                                                        }}
+                                                        value={
+                                                            beneficiary.percent
+                                                        }
+                                                        onChange={this.handleBeneficiaryPercentChange(
+                                                            idx
+                                                        )}
+                                                    />
+                                                    % &nbsp; {tt('g.to')} &nbsp;
+                                                    <div
+                                                        className="input-group"
+                                                        style={{
+                                                            'max-width':
+                                                                '11rem',
+                                                            'max-height':
+                                                                '1.5rem',
+                                                        }}
+                                                    >
+                                                        <span
+                                                            className="input-group-label"
+                                                            style={{
+                                                                'max-width':
+                                                                    '1.5rem',
+                                                                padding:
+                                                                    '0 0.2rem',
+                                                            }}
+                                                        >
+                                                            @
+                                                        </span>
+                                                        <Autocomplete
+                                                            wrapperStyle={{
+                                                                display:
+                                                                    'inline-block',
+                                                                'max-height':
+                                                                    '1.5rem',
+                                                            }}
+                                                            inputProps={{
+                                                                type: 'text',
+                                                                className:
+                                                                    'input-group-field',
+                                                                autoComplete:
+                                                                    'off',
+                                                                autoCorrect:
+                                                                    'off',
+                                                                autoCapitalize:
+                                                                    'off',
+                                                                spellCheck:
+                                                                    'false',
+                                                                disabled: loading,
+                                                                style: {
+                                                                    'max-height':
+                                                                        '1.5rem',
+                                                                },
+                                                            }}
+                                                            renderMenu={items => (
+                                                                <div
+                                                                    className="react-autocomplete-input"
+                                                                    children={
+                                                                        items
+                                                                    }
+                                                                />
+                                                            )}
+                                                            getItemValue={item =>
+                                                                item
+                                                            }
+                                                            items={
+                                                                this.props
+                                                                    .following
+                                                            }
+                                                            shouldItemRender={
+                                                                this
+                                                                    .matchAutocompleteUser
+                                                            }
+                                                            renderItem={(
+                                                                item,
+                                                                isHighlighted
+                                                            ) => (
+                                                                <div
+                                                                    className={
+                                                                        isHighlighted
+                                                                            ? 'active'
+                                                                            : ''
+                                                                    }
+                                                                >
+                                                                    {item}
+                                                                </div>
+                                                            )}
+                                                            value={
+                                                                beneficiary.username
+                                                            }
+                                                            onChange={this.handleBeneficiaryUserChange(
+                                                                idx
+                                                            )}
+                                                            onSelect={this.handleBeneficiaryUserSelect(
+                                                                idx
+                                                            )}
+                                                        />
+                                                        &nbsp;
+                                                        <a
+                                                            href="#"
+                                                            onClick={this.handleRemoveBeneficiary(
+                                                                idx
+                                                            )}
+                                                        >
+                                                            {tt('g.remove')}
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            )
+                                        )}
+                                        <label
+                                            title={tt(
+                                                'reply_editor.check_this_to_auto_upvote_your_post'
+                                            )}
+                                        >
+                                            {tt('g.upvote_post')} &nbsp;
+                                            <input
+                                                type="checkbox"
+                                                checked={autoVote.value}
+                                                onChange={autoVoteOnChange}
+                                            />
+                                        </label>
                                     </div>
                                 )}
                         </div>
@@ -631,6 +905,7 @@ class ReplyEditor extends React.Component {
                                     className={
                                         'Preview ' + vframe_section_shrink_class
                                     }
+                                    style={{ clear: 'both' }}
                                 >
                                     {!isHtml && (
                                         <div className="float-right">
@@ -712,7 +987,7 @@ export default formId =>
         // mapStateToProps
         (state, ownProps) => {
             const username = state.user.getIn(['current', 'username']);
-            const fields = ['body'];
+            const fields = ['body', 'autoVote:checked'];
             const { type, parent_author, jsonMetadata } = ownProps;
             const isEdit = type === 'edit';
             const isStory =
@@ -725,25 +1000,26 @@ export default formId =>
             if (isStory && jsonMetadata && jsonMetadata.tags) {
                 category = Set([category, ...jsonMetadata.tags]).join(' ');
             }
-
-            const payoutType = state.app.getIn(
-                [
-                    'user_preferences',
-                    isStory ? 'defaultBlogPayout' : 'defaultCommentPayout',
-                ],
-                '50%'
-            );
-
+            var following = [];
+            const follow = state.global.get('follow');
+            if (follow) {
+                const followingData = follow.getIn([
+                    'getFollowingAsync',
+                    username,
+                    'blog_result',
+                ]);
+                if (followingData) following = followingData.sort();
+            }
             const ret = {
                 ...ownProps,
                 fields,
                 isStory,
                 username,
-                payoutType,
                 initialValues: { title, body, category },
                 state,
                 formId,
                 richTextEditor,
+                following,
             };
             return ret;
         },
@@ -775,7 +1051,9 @@ export default formId =>
                 isStory,
                 type,
                 originalPost,
+                autoVote = false,
                 payoutType = '50%',
+                beneficiaries = [],
                 state,
                 jsonMetadata,
                 successCallback,
@@ -800,8 +1078,8 @@ export default formId =>
                       }
                     : // edit existing
                       isEdit
-                      ? { author, permlink, parent_author, parent_permlink }
-                      : null;
+                        ? { author, permlink, parent_author, parent_permlink }
+                        : null;
 
                 if (!linkProps) throw new Error('Unknown type: ' + type);
 
@@ -893,25 +1171,93 @@ export default formId =>
                     return;
                 }
 
+                if (beneficiaries.length > 8) {
+                    errorCallback(tt('reply_editor.exceeds_max_benficiaries'));
+                    return;
+                }
+                var totalPercent = 0;
+
+                var beneficiaryNames = Set();
+                for (var i = 0; i < beneficiaries.length; i++) {
+                    const beneficiary = beneficiaries[i];
+                    const accountError = validate_account_name(
+                        beneficiary.username,
+                        ''
+                    );
+                    if (accountError) {
+                        errorCallback(accountError);
+                        return;
+                    }
+                    if (beneficiary.username === username) {
+                        errorCallback(
+                            tt('reply_editor.beneficiary_cannot_be_self')
+                        );
+                        return;
+                    }
+                    if (beneficiaryNames.has(beneficiary.username)) {
+                        errorCallback(
+                            tt('reply_editor.beneficiary_cannot_be_duplicate')
+                        );
+                        return;
+                    } else {
+                        beneficiaryNames = beneficiaryNames.add(
+                            beneficiary.username
+                        );
+                    }
+                    if (!/^[1-9]\d{0,2}$/.test(beneficiary.percent)) {
+                        errorCallback(
+                            tt('reply_editor.beneficiary_percent_invalid')
+                        );
+                        return;
+                    }
+                    totalPercent += parseInt(beneficiary.percent);
+                }
+                if (totalPercent > 100) {
+                    errorCallback(
+                        tt('reply_editor.beneficiary_percent_total_invalid')
+                    );
+                    return;
+                }
+
                 startLoadingIndicator();
 
                 const originalBody = isEdit ? originalPost.body : null;
-                const __config = { originalBody };
+                const __config = { originalBody, autoVote };
 
                 // Avoid changing payout option during edits #735
                 if (!isEdit) {
+                    __config.comment_options = {};
                     switch (payoutType) {
                         case '0%': // decline payout
-                            __config.comment_options = {
-                                max_accepted_payout: '0.000 SBD',
-                            };
+                            __config.comment_options.max_accepted_payout =
+                                '0.000 SBD';
                             break;
                         case '100%': // 100% steem power payout
-                            __config.comment_options = {
-                                percent_steem_dollars: 0, // 10000 === 100% (of 50%)
-                            };
+                            __config.comment_options.percent_steem_dollars = 0; // 10000 === 100% (of 50%)
                             break;
                         default: // 50% steem power, 50% sd+steem
+                    }
+                     if (beneficiaries && beneficiaries.length > 0) { 
+                        __config.comment_options.extensions = [
+                            [
+                                0,
+                                {
+                                    beneficiaries: beneficiaries
+                                        .sort(
+                                            (a, b) =>
+                                                a.username < b.username
+                                                    ? -1
+                                                    : a.username > b.username
+                                                        ? 1
+                                                        : 0
+                                        )
+                                        .map(elt => ({
+                                            account: elt.username,
+                                            weight: parseInt(elt.percent) * 100,
+                                        })),
+                                },
+                            ],
+                        ];
                     }
                 }
 
@@ -933,4 +1279,4 @@ export default formId =>
                 );
             },
         })
-    )(ReplyEditor);
+)(ReplyEditor);
