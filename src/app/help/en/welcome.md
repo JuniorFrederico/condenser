@@ -8,7 +8,7 @@ Abaixo, há uma seção de "Postagens úteis de usuários Steemit", que contém 
 
 Abaixo está uma lista de usuários recomendados a seguir, uma coleção de outros recursos, incluindo o <a href="/faq.html">FAQ </a> e [Steem bluepaper](https://steem.io/steem-bluepaper.pdf), bem como informações sobre onde encontrar ajuda ao vivo.
 
-## <span id="Table_of_Contents">Table of Contents /span>
+## <span id="Table_of_Contents">Table of Contents </span>
 
 ### To Do List
 
