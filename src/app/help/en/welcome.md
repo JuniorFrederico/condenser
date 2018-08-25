@@ -8,7 +8,7 @@ Abaixo, há uma seção de "Postagens úteis de usuários Steemit", que contém 
 
 Abaixo está uma lista de usuários recomendados a seguir, uma coleção de outros recursos, incluindo o <a href="/faq.html">FAQ </a> e [Steem bluepaper](https://steem.io/steem-bluepaper.pdf), bem como informações sobre onde encontrar ajuda ao vivo.
 
-## <span id="Table_of_Contents">Table of Contents</span>
+## <span id="Table_of_Contents">Table of Contents /span>
 
 ### To Do List
 
@@ -45,7 +45,7 @@ Abaixo está uma lista de usuários recomendados a seguir, uma coleção de outr
 
 ## To Do List
 <span></span>
-### <span id="Backup_your_password">1. Backup sua senha/span>
+### <span id="Backup_your_password">1. Backup sua senha /span>
 
 Ao contrário dos serviços da Web centralizados, ** o Steem Blockchain não tem recuperação de senha da conta **.
 
@@ -213,7 +213,7 @@ Além disso, certifique-se de não estar violando nenhuma lei de direitos autora
 <a href="#Table_of_Contents">^</a>
 ### <span id="Password_Security">Password Security</span>
 
-** Não há recuperação de senha perdida para contas Steem **. Você é 100% responsável por fazer o backup. Isso significa backups digitais seguros, bem como backups de papel protegidos, fora do local, se possível.
+**Não há recuperação de senha perdida para contas Steem**. Você é 100% responsável por fazer o backup. Isso significa backups digitais seguros, bem como backups de papel protegidos, fora do local, se possível.
 
 Sua conta SteemBR vale dinheiro real. Trate sua senha SteemBR como se fosse sua senha bancária, e mantenha-a segura!
 
