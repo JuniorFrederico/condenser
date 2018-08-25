@@ -45,7 +45,7 @@ Abaixo está uma lista de usuários recomendados a seguir, uma coleção de outr
 
 ## To Do List
 <span></span>
-### <span id="Backup_your_password">1. Backup sua senha /span>
+### <span id="Backup_your_password">1. Backup sua senha </span>
 
 Ao contrário dos serviços da Web centralizados, ** o Steem Blockchain não tem recuperação de senha da conta **.
 
