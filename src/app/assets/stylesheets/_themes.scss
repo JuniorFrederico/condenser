@@ -4,7 +4,7 @@ $themes: (
     colorAccentHover: $color-blue-original-light,
     colorAccentReverse: $color-blue-original-light,
     colorWhite: $color-white,
-    backgroundColor: $color-background-off-white,
+    backgroundColor: $color-background-off-white1,
     backgroundColorEmphasis: $color-background-almost-white,
     backgroundColorOpaque: $color-background-off-white,
     backgroundTransparent: transparent,
@@ -38,7 +38,7 @@ $themes: (
     colorAccentHover: $color-teal-dark,
     colorAccentReverse: $color-blue-black,
     colorWhite: $color-white,
-    backgroundColor: $color-background-off-white,
+    backgroundColor: $color-background-off-white1,
       backgroundColorEmphasis: $color-background-almost-white,
     backgroundColorOpaque: $color-background-off-white,
     backgroundTransparent: transparent,
@@ -73,20 +73,20 @@ $themes: (
     colorAccentHover: $color-teal,
     colorAccentReverse: $color-white,
     colorWhite: $color-white,
-    backgroundColor: $color-background-dark,
+    backgroundColor: #1B2836,
       backgroundColorEmphasis: $color-background-super-dark,
     backgroundColorOpaque: $color-blue-dark,
-    moduleBackgroundColor: $color-background-dark,
+    moduleBackgroundColor: $color-background-darke,
     backgroundTransparent: transparent,
     menuBackgroundColor: $color-blue-dark,
     moduleMediumBackgroundColor: $color-background-dark,
-    navBackgroundColor: $color-background-dark,
+    navBackgroundColor: $color-background-darke,
     highlightBackgroundColor: $color-blue-black-darkest,
-    tableRowEvenBackgroundColor: #212C33,
-    border: 1px solid $color-border-dark,
-    borderLight: 1px solid $color-border-dark-lightest,
-    borderDark: 1px solid $color-text-gray-light,
-    borderAccent: 1px solid $color-teal,
+    tableRowEvenBackgroundColor: #071F2F, 
+    border: 1px #000000,
+    borderLight: 1px #000000,
+    borderDark: 1px #000000,
+    borderAccent: 1px #000000,
     borderTransparent: transparent,
     iconColorSecondary: $color-text-gray-light,
     textColorPrimary: $color-text-white,
@@ -139,7 +139,7 @@ $themes: (
     background-color: $white;
     color: $color-text-dark;
     @include MQ(M) {
-      background-color: $color-background-off-white;
+      background-color: $color-background-off-white1;
     }
   }
   .theme-dark {
